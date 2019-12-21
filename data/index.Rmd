@@ -1,0 +1,81 @@
+---
+title: "index.Rmd"
+author: "Precious Stowers"
+date: "November 12, 2019"
+output: html_document
+---
+
+```{r setup, include = FALSE}
+library(knitr)
+library(dplyr)
+library(ggplot2)
+library(leaflet)
+knitr::opts_chunk$set(echo = TRUE)
+source("analysis.R")
+```
+## Summary Information
+  In the 2018, there was `r num_of_shootings` shooting events that occured and there was `r lives_lost` total lives lost. The city that was most impact was `r most_impact`, currently standing with the most amount of kills that occured and `r max_injured` with the most amount injuries durring an event. Based on the data given, there is an average of `r average_num_injured` injuries and the average of deaths per incident is `r average_num_killed`. 
+  [click here to visit the data source](http://www.shootingtracker.com/)
+
+## Summary Table
+```{r summary_table, echo = FALSE}
+df %>%
+  filter(state == "Washington") %>%
+  group_by(date) %>%
+  summarise(state = " Washington",
+            num_injured = sum(num_injured),
+            num_killed = sum(num_killed)) %>%
+  kable(caption = "2018 Mass Shooting Events in Washington State",
+        col.names = c("Date Occured", "State Occured", "# injured", "# killed"))
+
+```
+
+### Insights
+  This summary table describes the mass shootings that has occured in Washington State. In comparison to the other states, Washington only has three mass shootings based on the data frame. The reason Washington was chosen, is because this could be the start of more mass shootings in the future. 
+
+## Particular Incident
+  The particular incident chosen was the event that happend on `r particular_date`, at `r particular_address`, `r particular_state`. There was a total of `r particular_injuries` injuries and `r particular_kills` killed in this event. In specific, this event happend at an "all night arts and music festival" and on Sunday morning around 2:45am, gunshots were heard and people rushed to get out of the scene. At the incident, there was also a 33 year old man that was reportedly shot by the police.  
+
+###### Link:
+https://www.cbsnews.com/news/trenton-new-jersey-fatal-shooting-art-all-night-festival-2018-06-17/
+
+## An interactive Map
+```{r interactive_map, echo = FALSE}
+leaflet(df) %>%
+  addTiles() %>%
+  addCircleMarkers(radius = ~num_killed,
+                    opacity = .5,
+                    stroke = FALSE,
+                    fillOpacity = .5,
+                    lat = ~lat,
+                    lng = ~long,
+                    popup = ~paste("City:", city, "<br>",
+                                   "# Killed:", num_killed, "<br>",
+                                   "# Injured:", num_injured)
+                                   )
+```
+
+##### Insights:
+  
+  Based on the interactive map, it is shown that the there is a common location in which these events have occured, primarily focusing on the southeast, southwest and northeast most part of the United States. It is also shown that the events with the most amount of deaths at the event (most impacted), are sometimes also surrounded by other shooting events that has taken place. This questions if the neighborhood/community is generally unsafe, are they planned events or spur of the moment, or are there general gang activity that leads to these events taken place?
+
+## Choice of Plot
+##### Question: In Florida, what is the rate of change between the number killed in each event 
+#####                                 over time?
+```{r choice plot, echo = FALSE}
+ggplot(data = plot_table, aes(x = date, y = num_killed, group = 1)) +
+  geom_line(color = "BLACK") +
+  geom_point() +
+  ggtitle("Amount killed in Florida events over time in 2018") +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1))
+```
+
+##### Insights:
+ This chart shows the change in the amount of people killed in each event over time including both the maxiumum, minimum(s) and when it occured. This chart also shows the relationship with the number of killed in each event, revealing that there is not a specific pattern with each event, but outside political events such as the presidental election and/or political reasonings that could cause these events take place and/or become more violent. A prediction can be based off of this chart, showing that the next mass shooting could be more impactful depending on the political atmosphere guiding its way into the 2020 election.
+ 
+## Critical reflection
+  In my report, I was able to compare the quantity of mass shootings in two drastically different states, Florida and Washgington State. While Washington's data was based on a Sumary table and Florida's was based on a line graph, it shows the difference in increased Mass shootings and the predictions that could be made in the future. By comparing and contrasting these two different states, it questions if the U.S could be on the break of another war in the next 10 years due to the violience within the different communities, or if the goverement and extensive capitialism will be the reason people turn to violence.
+  
+  In Cathy O'neil's novel Weapons of Math Destruction, she states how police departments using "PredPol" creates a vicious feedback loop by targeting violent people in which come from poverished areas of the U.S. This however brings more police into poverished areas and more police means more people are able to get caught and/or be locked up for petty crimes. In the book, it states "The result is that we criminalize poverty, believing all the while that our tools ar not only scientific but fair", and she further states how these tools are everything but fair and can put more innocent people in danger. This idea connects with my webpage, because it connects with the idea of sterotyping states, specifically the Southern States. Many states such as Illinois, Alabama and Florida are known for having much police activity involved in those states and social media consiously enlightens people on this situation. While in states such as Washington and Ohio are also involved with certain police activity, however social media did not enlighten people on the mass shootings that happend and the mass amount fo violence that occured. This continous loop of putting certain states on blast, pursuades people to have certian ideas about the states and the people who live in them, while in the end, it's the new technology and the goverment use of it (without question) that can start these violent scenarios and put people in harm.
+  
+  The idea of using data to detect criminals and keep track of tragic events can bring both a negative and a positive impact. The main positive impact this can bring is the history and documentation, that rememebering these tragic events can bring further investigation into what happend, who/what started it and how we as citizens can do to help avoid it in the future. This can however bring harm if one only focuses on the data, refering back to Cathy O'neil's idea, one who soley focuses on the numbers and the data can cause more trouble. If one only looks at the area of mass shootings, they might be tempted to avoid these areas, use their system and contue to use the police to help bring the city to "justice", or begin to have false assumptions about the area.
